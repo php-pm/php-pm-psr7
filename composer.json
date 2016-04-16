@@ -1,0 +1,11 @@
+{
+    "name": "franzl/php-pm-psr7",
+    "autoload": {
+        "psr-4": {
+            "Franzl\\PHPPM\\Psr7\\": "src/"
+        }
+    },
+    "require": {
+        "wyrihaximus/react-psr7-stream-converter": "@dev"
+    }
+}
