@@ -89,6 +89,11 @@ class Psr7Bridge implements BridgeInterface
      */
     private function mapResponse(Psr7Response $psr7Response, ReactResponse $response)
     {
+        if (PHP_SESSION_ACTIVE === session_status()) {
+            session_write_close();
+            session_unset();
+        }
+
         $response->writeHead(
             $psr7Response->getStatusCode(),
             $psr7Response->getHeaders()
