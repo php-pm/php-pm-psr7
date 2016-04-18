@@ -4,5 +4,8 @@
         "psr-4": {
             "PHPPM\\Psr7\\": "src/"
         }
+    },
+    "require": {
+        "zendframework/zend-diactoros": "^1.3"
     }
 }
