@@ -2,7 +2,7 @@
     "name": "php-pm/php-pm-psr7",
     "autoload": {
         "psr-4": {
-            "Franzl\\PHPPM\\Psr7\\": "src/"
+            "PHPPM\\Psr7\\": "src/"
         }
     }
 }

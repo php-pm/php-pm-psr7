@@ -1,6 +1,6 @@
 <?php
 
-namespace Franzl\PHPPM\Psr7;
+namespace PHPPM\Psr7;
 
 use PHPPM\Bridges\BridgeInterface;
 use PHPPM\React\HttpResponse as ReactResponse;
