@@ -25,6 +25,8 @@ For example, if you use Zend's [Stratigility library](https://github.com/zendfra
 ```php
 namespace Your\App;
 
+use Zend\Stratigility\MiddlewarePipe;
+
 class Middleware
 {
     public function __construct()
@@ -34,7 +36,13 @@ class Middleware
 
     public function __invoke($request, $response, $next = null)
     {
-        // Handle the request and return a new response
+        $pipe = new MiddlewarePipe;
+
+        $pipe->pipe(new MyFirstMiddleware);
+        $pipe->pipe(new MySecondMiddleware);
+        $pipe->pipe(new MyThirdMiddleware);
+
+        return $pipe($request, $response, $next);
     }
 }
 ```
