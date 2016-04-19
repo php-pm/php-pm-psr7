@@ -1,5 +1,5 @@
 {
-    "name": "php-pm/php-pm-psr7",
+    "name": "php-pm/psr7-adapter",
     "autoload": {
         "psr-4": {
             "PHPPM\\Psr7\\": "src/"
