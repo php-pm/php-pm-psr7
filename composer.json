@@ -1,5 +1,7 @@
 {
     "name": "php-pm/psr7-adapter",
+    "description": "A PSR-7 middleware bridge for PHP-PM",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "PHPPM\\Psr7\\": "src/"
