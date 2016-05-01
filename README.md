@@ -1,6 +1,6 @@
 # PHP-PM PSR-7 Adapter
 
-PSR-7 adapter for use of PSR-7 middleware applications with PHP-PM.
+[PSR-7](http://www.php-fig.org/psr/psr-7/) adapter for use of PSR-7 middleware applications with PHP-PM.
 See https://github.com/php-pm/php-pm.
 
 ## Setup
