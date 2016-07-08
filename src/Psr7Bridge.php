@@ -24,7 +24,7 @@ class Psr7Bridge implements BridgeInterface
      */
     public function bootstrap($appBootstrap, $appenv, $debug)
     {
-        $this->middleware = new $appBootstrap;
+        $this->middleware = new $appBootstrap($appenv, $debug);
     }
 
     /**
