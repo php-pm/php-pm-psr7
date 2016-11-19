@@ -29,20 +29,23 @@ use Zend\Stratigility\MiddlewarePipe;
 
 class Middleware
 {
+    protected $pipe;
+
     public function __construct()
     {
         // Set up the application
+
+        $this->pipe = new MiddlewarePipe;
+
+        $this->pipe->pipe(new MyFirstMiddleware);
+        $this->pipe->pipe(new MySecondMiddleware);
+        $this->pipe->pipe(new MyThirdMiddleware);
     }
 
     public function __invoke($request, $response, $next = null)
     {
-        $pipe = new MiddlewarePipe;
-
-        $pipe->pipe(new MyFirstMiddleware);
-        $pipe->pipe(new MySecondMiddleware);
-        $pipe->pipe(new MyThirdMiddleware);
-
-        return $pipe($request, $response, $next);
+        $middleware = $this->pipe;
+        return $middleware($request, $response, $next);
     }
 }
 ```
