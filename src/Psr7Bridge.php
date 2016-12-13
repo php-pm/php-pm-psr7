@@ -2,6 +2,7 @@
 
 namespace PHPPM\Psr7;
 
+use PHPPM\Bootstraps\ApplicationEnvironmentAwareInterface;
 use PHPPM\Bridges\BridgeInterface;
 use PHPPM\React\HttpResponse as ReactResponse;
 use Psr\Http\Message\ResponseInterface as Psr7Response;
@@ -25,6 +26,9 @@ class Psr7Bridge implements BridgeInterface
     public function bootstrap($appBootstrap, $appenv, $debug)
     {
         $this->middleware = new $appBootstrap;
+        if ($this->middleware instanceof ApplicationEnvironmentAwareInterface) {
+            $this->middleware->initialize($appenv, $debug);
+        }
     }
 
     /**
