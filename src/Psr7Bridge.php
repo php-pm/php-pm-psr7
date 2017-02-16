@@ -10,6 +10,7 @@ use React\Http\Request as ReactRequest;
 use Zend\Diactoros\Response as DiactorosResponse;
 use Zend\Diactoros\ServerRequest as DiactorosRequest;
 use Zend\Diactoros\Stream as DiactorosStream;
+use React\EventLoop\LoopInterface;
 
 class Psr7Bridge implements BridgeInterface
 {
@@ -23,7 +24,7 @@ class Psr7Bridge implements BridgeInterface
      * @param boolean $debug If debug is enabled
      * @see http://stackphp.com
      */
-    public function bootstrap($appBootstrap, $appenv, $debug)
+    public function bootstrap($appBootstrap, $appenv, $debug, LoopInterface $loop)
     {
         $this->middleware = new $appBootstrap;
         if ($this->middleware instanceof ApplicationEnvironmentAwareInterface) {
