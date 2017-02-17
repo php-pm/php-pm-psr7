@@ -3,6 +3,7 @@
 namespace PHPPM\Psr7;
 
 use PHPPM\Bootstraps\ApplicationEnvironmentAwareInterface;
+use PHPPM\Bootstraps\AsyncInterface;
 use PHPPM\Bridges\BridgeInterface;
 use PHPPM\React\HttpResponse as ReactResponse;
 use Psr\Http\Message\ResponseInterface as Psr7Response;
@@ -29,6 +30,9 @@ class Psr7Bridge implements BridgeInterface
         $this->middleware = new $appBootstrap;
         if ($this->middleware instanceof ApplicationEnvironmentAwareInterface) {
             $this->middleware->initialize($appenv, $debug);
+        }
+        if ($this->bootstrap instanceof AsyncInterface) {
+            $this->bootstrap->setLoop($loop);
         }
     }
 
