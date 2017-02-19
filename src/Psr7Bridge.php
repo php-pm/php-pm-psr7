@@ -31,8 +31,8 @@ class Psr7Bridge implements BridgeInterface
         if ($this->middleware instanceof ApplicationEnvironmentAwareInterface) {
             $this->middleware->initialize($appenv, $debug);
         }
-        if ($this->bootstrap instanceof AsyncInterface) {
-            $this->bootstrap->setLoop($loop);
+        if ($this->middleware instanceof AsyncInterface) {
+            $this->middleware->setLoop($loop);
         }
     }
 
