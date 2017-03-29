@@ -2,32 +2,39 @@
 
 namespace PHPPM\Psr7;
 
+use Interop\Http\ServerMiddleware\DelegateInterface;
 use PHPPM\Bootstraps\ApplicationEnvironmentAwareInterface;
 use PHPPM\Bootstraps\AsyncInterface;
+use PHPPM\Bootstraps\BootstrapInterface;
 use PHPPM\Bridges\BridgeInterface;
-use PHPPM\React\HttpResponse as ReactResponse;
-use Psr\Http\Message\ResponseInterface as Psr7Response;
-use React\Http\Request as ReactRequest;
-use Zend\Diactoros\Response as DiactorosResponse;
-use Zend\Diactoros\ServerRequest as DiactorosRequest;
-use Zend\Diactoros\Stream as DiactorosStream;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\LoopInterface;
 
 class Psr7Bridge implements BridgeInterface
 {
+    /**
+     * @var DelegateInterface
+     */
     protected $middleware;
 
     /**
      * Bootstrap an application implementing the HttpKernelInterface.
      *
-     * @param string $appBootstrap The name of the class used to bootstrap the application
-     * @param string|null $appBootstrap The environment your application will use to bootstrap (if any)
+     * @param string $appBootstrap The name of the class (implementing BootstrapInterface) used to bootstrap the application, must implement DelegateInterface
+     * @param string $appenv The environment your application will use to bootstrap (if any)
      * @param boolean $debug If debug is enabled
+     * @param LoopInterface $loop
+     * @see DelegateInterface
+     * @see BootstrapInterface
      * @see http://stackphp.com
      */
     public function bootstrap($appBootstrap, $appenv, $debug, LoopInterface $loop)
     {
         $this->middleware = new $appBootstrap;
+        if (!($this->middleware instanceof DelegateInterface)) {
+            throw new \RuntimeException(sprintf('%s must implement %s', get_class($this->middleware), DelegateInterface::class));
+        }
         if ($this->middleware instanceof ApplicationEnvironmentAwareInterface) {
             $this->middleware->initialize($appenv, $debug);
         }
@@ -49,100 +56,11 @@ class Psr7Bridge implements BridgeInterface
     /**
      * Handle a request using a HttpKernelInterface implementing application.
      *
-     * @param ReactRequest $request
-     * @param ReactResponse $response
+     * @param RequestInterface $request
+     * @return ResponseInterface
      */
-    public function onRequest(ReactRequest $request, ReactResponse $response)
+    public function onRequest(RequestInterface $request)
     {
-        if ($this->middleware === null) {
-            return;
-        }
-
-        $psr7Request = $this->mapRequest($request);
-
-        $middleware = $this->middleware;
-
-        $initialResponse = new DiactorosResponse;
-        $psr7Response = $middleware($psr7Request, $initialResponse);
-
-        $this->mapResponse($psr7Response, $response);
-    }
-
-    /**
-     * Convert a ReactPHP request into a PHP-7 compatible one.
-     *
-     * @param ReactRequest $request
-     * @return \Psr\Http\Message\ServerRequestInterface
-     */
-    private function mapRequest(ReactRequest $request)
-    {
-        return new DiactorosRequest(
-            $_SERVER,
-            $request->getFiles(),
-            $request->getUrl(),
-            $request->getMethod(),
-            $this->getBodyStreamFrom($request),
-            $request->getHeaders(),
-            $this->getCookiesFrom($request),
-            $request->getQuery(),
-            $request->getPost(),
-            $request->getHttpVersion()
-        );
-    }
-
-    /**
-     * Load the response information onto the given ReactPHP response object.
-     *
-     * @param Psr7Response $psr7Response
-     * @param ReactResponse $response
-     */
-    private function mapResponse(Psr7Response $psr7Response, ReactResponse $response)
-    {
-        if (PHP_SESSION_ACTIVE === session_status()) {
-            session_write_close();
-            session_unset();
-        }
-
-        $response->writeHead(
-            $psr7Response->getStatusCode(),
-            $psr7Response->getHeaders()
-        );
-
-        $response->end(
-            $psr7Response->getBody()
-        );
-    }
-
-    /**
-     * @param ReactRequest $request
-     * @return \Psr\Http\Message\StreamInterface
-     */
-    private function getBodyStreamFrom(ReactRequest $request)
-    {
-        $bodyStream = new DiactorosStream('php://temp', 'rw');
-        $bodyStream->write($request->getBody());
-
-        return $bodyStream;
-    }
-
-    /**
-     * @param ReactRequest $request
-     * @return array
-     */
-    private function getCookiesFrom(ReactRequest $request)
-    {
-        $headers = $request->getHeaders();
-
-        if (!isset($headers['Cookie']) && !isset($headers['cookie'])) {
-            return [];
-        }
-
-        $cookieHeader = explode(';', isset($headers['Cookie']) ? $headers['Cookie'] : $headers['cookie']);
-
-        return array_reduce($cookieHeader, function ($cookies, $cookie) {
-            list($name, $value) = explode('=', trim($cookie));
-            $cookies[$name] = $value;
-            return $cookies;
-        }, []);
+        return $this->middleware->process($request);
     }
 }
