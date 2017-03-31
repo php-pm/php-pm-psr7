@@ -44,16 +44,6 @@ class Psr7Bridge implements BridgeInterface
     }
 
     /**
-     * Returns the repository which is used as root for the static file serving.
-     *
-     * @return string
-     */
-    public function getStaticDirectory()
-    {
-        return './';
-    }
-
-    /**
      * Handle a request using a HttpKernelInterface implementing application.
      *
      * @param RequestInterface $request
