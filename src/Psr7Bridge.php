@@ -7,8 +7,8 @@ use PHPPM\Bootstraps\ApplicationEnvironmentAwareInterface;
 use PHPPM\Bootstraps\AsyncInterface;
 use PHPPM\Bootstraps\BootstrapInterface;
 use PHPPM\Bridges\BridgeInterface;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use React\EventLoop\LoopInterface;
 
 class Psr7Bridge implements BridgeInterface
@@ -16,7 +16,7 @@ class Psr7Bridge implements BridgeInterface
     /**
      * @var DelegateInterface
      */
-    protected $middleware;
+    protected $delegate;
 
     /**
      * Bootstrap an application implementing the HttpKernelInterface.
@@ -31,26 +31,27 @@ class Psr7Bridge implements BridgeInterface
      */
     public function bootstrap($appBootstrap, $appenv, $debug, LoopInterface $loop)
     {
-        $this->middleware = new $appBootstrap;
-        if (!($this->middleware instanceof DelegateInterface)) {
-            throw new \RuntimeException(sprintf('%s must implement %s', get_class($this->middleware), DelegateInterface::class));
+        $this->delegate = new $appBootstrap;
+        if (!($this->delegate instanceof DelegateInterface)) {
+            throw new \RuntimeException(sprintf('%s must implement %s', get_class($this->delegate), DelegateInterface::class));
         }
-        if ($this->middleware instanceof ApplicationEnvironmentAwareInterface) {
-            $this->middleware->initialize($appenv, $debug);
+        if ($this->delegate instanceof ApplicationEnvironmentAwareInterface) {
+            $this->delegate->initialize($appenv, $debug);
         }
-        if ($this->middleware instanceof AsyncInterface) {
-            $this->middleware->setLoop($loop);
+        if ($this->delegate instanceof AsyncInterface) {
+            $this->delegate->setLoop($loop);
         }
     }
 
     /**
-     * Handle a request using a HttpKernelInterface implementing application.
+     * Dispatch the next available middleware and return the response.
      *
-     * @param RequestInterface $request
+     * @param ServerRequestInterface $request
+     *
      * @return ResponseInterface
      */
-    public function onRequest(RequestInterface $request)
+    public function process(ServerRequestInterface $request)
     {
-        return $this->middleware->process($request);
+        return $this->delegate->process($request);
     }
 }

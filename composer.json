@@ -18,6 +18,10 @@
         {
             "type": "git",
             "url": "https://github.com/maciejmrozinski/php-pm"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/legionth/http"
         }
     ]
 }
