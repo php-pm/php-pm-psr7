@@ -55,12 +55,12 @@ class Middleware
 When starting PPM, pass your middleware as the bootstrapper:
 
 ```
-vendor/bin/ppm start --bridge=PHPPM\\Psr7\\Psr7Bridge --bootstrap=Your\\App\\Middleware
+vendor/bin/ppm start --bridge=PHPPM\\Bridges\\Psr7Bridge --bootstrap=Your\\App\\Middleware
 ```
 
 Alternatively, first configure PPM to use these options by default, and then start it directly:
 
 ```
-vendor/bin/ppm config --bridge=PHPPM\\Psr7\\Psr7Bridge --bootstrap=Your\\App\\Middleware
+vendor/bin/ppm config --bridge=PHPPM\\Bridges\\Psr7Bridge --bootstrap=Your\\App\\Middleware
 vendor/bin/ppm start
 ```
