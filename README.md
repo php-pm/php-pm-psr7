@@ -1,3 +1,5 @@
+**[OBSOLETE] PSR-7 compatibility is now built into [php-pm](https://github.com/php-pm/php-pm) directly.**
+
 # PHP-PM PSR-7 Adapter
 
 [PSR-7](http://www.php-fig.org/psr/psr-7/) adapter for use of PSR-7 middleware applications with PHP-PM.
